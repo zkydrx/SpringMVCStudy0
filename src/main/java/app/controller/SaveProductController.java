@@ -2,9 +2,11 @@ package app.controller;
 
 import app.domain.Product;
 import app.form.ProductForm;
+import app.validator.ProductValidator;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
@@ -24,21 +26,43 @@ public class SaveProductController implements Controller
         productForm.setDescription(request.getParameter("description"));
         productForm.setPrice(request.getParameter("price"));
 
-        // create model
-        Product product = new Product();
-        product.setName(productForm.getName());
-        product.setDescription(productForm.getDescription());
-        try
+        // validate ProductForm
+
+        ProductValidator productValidator = new ProductValidator();
+        List<String> errors = productValidator.validate(productForm);
+        if(errors.isEmpty())
         {
-            product.setPrice(Float.parseFloat(productForm.getPrice()));
+            // create Product from ProductForm
+            Product product = new Product();
+            product.setName(productForm.getName());
+            product.setDescription(productForm.getDescription());
+            try
+            {
+                product.setPrice(Float.parseFloat(productForm.getPrice()));
+            }
+            catch (NumberFormatException e)
+            {
+                e.printStackTrace();
+            }
+
+            // no validation error,execute action method
+            // insert code to save product to the database
+
+            // store product in a scope varibale for the view
+
+            return "/WEB-INF/jsp/ProductDetails.jsp";
+
         }
-        catch (NumberFormatException e)
+        else
         {
-            e.printStackTrace();
+            // store errors and form in a scope variable for the view
+            request.setAttribute("errors",errors);
+            request.setAttribute("form",productForm);
+            return "/WEB-INF/jsp/ProductForm.jsp";
         }
 
-        // insert code to add product to the database.
-        request.setAttribute("product", product);
-        return "/WEB-INF/jsp/ProductDetails.jsp";
+
+
+
     }
 }
