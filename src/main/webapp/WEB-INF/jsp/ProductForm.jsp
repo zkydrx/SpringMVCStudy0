@@ -18,7 +18,7 @@
             <legend>Add a Product</legend>
             <p>
                 <label for="name">Product Name:</label>
-                <input type="text" id="name" tabindex="1"/>
+                <input type="text" id="name" name="name" tabindex="1"/>
             </p>
 
             <p>
